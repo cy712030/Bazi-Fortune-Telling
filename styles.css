@@ -734,23 +734,323 @@ footer {
     font-size: 1.05rem; /* 稍微增大字体 */
 }
 
-.advanced-content h4 {
+/* 新的排版结构样式 */
+.analysis-title {
     color: #8b4513; /* 深棕色标题 */
-    margin: 20px 0 12px 0;
-    font-size: 1.3rem;
+    margin: 0 0 25px 0;
+    font-size: 1.4rem;
     font-weight: bold;
-    border-left: 4px solid #d4af37; /* 皇家金色边框 */
-    padding-left: 15px;
-    background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
-    padding: 8px 15px;
-    border-radius: 0 4px 4px 0;
+    border-left: 5px solid #d4af37; /* 皇家金色边框 */
+    padding-left: 20px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.15) 0%, transparent 100%);
+    padding: 12px 20px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.1);
 }
 
-.advanced-content p {
-    margin: 12px 0;
+.section-subtitle {
+    color: #a0522d;
+    margin: 20px 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: 5px;
+}
+
+.analysis-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(244, 229, 194, 0.3);
+    border-radius: 8px;
+    border-left: 3px solid #d4af37;
+}
+
+.analysis-text {
+    margin: 10px 0;
     text-align: justify;
-    color: #3d2817; /* 稍浅的深褐色 */
+    color: #3d2817;
     font-weight: 500;
+    line-height: 1.8;
+}
+
+/* 用神分析特殊样式 */
+.yongshen-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.yongshen-results {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.yongshen-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, rgba(244, 229, 194, 0.6) 0%, rgba(238, 217, 173, 0.5) 100%);
+    border-radius: 6px;
+    border: 1px solid rgba(139, 69, 19, 0.2);
+}
+
+.yongshen-label {
+    color: #8b4513;
+    font-weight: bold;
+    font-size: 1.1rem;
+    min-width: 80px;
+}
+
+.yongshen-primary {
+    color: #8b4513; /* 深棕色主用神 */
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.3) 0%, rgba(212, 175, 55, 0.1) 100%);
+    padding: 8px 15px;
+    border-radius: 6px;
+    border-left: 3px solid #d4af37;
+    border: 2px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 2px 6px rgba(139, 69, 19, 0.15);
+}
+
+.yongshen-secondary {
+    color: #a0522d; /* 次用神稍浅 */
+    font-weight: bold;
+    font-size: 1.1rem;
+    background: rgba(212, 175, 55, 0.2);
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 1px 4px rgba(139, 69, 19, 0.1);
+}
+
+/* 格局分析新样式 */
+.geju-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.geju-results {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.geju-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.geju-name {
+    color: #8b4513;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.geju-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.geju-detail-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.detail-label {
+    color: #8b4513;
+    font-weight: bold;
+    min-width: 90px;
+    font-size: 1rem;
+}
+
+.detail-text {
+    color: #3d2817;
+    font-weight: 500;
+    flex: 1;
+    line-height: 1.6;
+}
+
+.geju-strength {
+    color: #d4af37;
+    font-weight: bold;
+    font-size: 1.1rem;
+    background: rgba(212, 175, 55, 0.2);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.geju-special {
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(244, 229, 194, 0.7) 0%, rgba(238, 217, 173, 0.6) 100%);
+    border-radius: 8px;
+    border: 2px solid rgba(139, 69, 19, 0.3);
+    text-align: center;
+}
+
+.special-text {
+    color: #3d2817;
+    font-weight: 500;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* 神煞分析新样式 */
+.shensha-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.shensha-category {
+    margin: 20px 0;
+}
+
+.category-title {
+    color: #8b4513;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 0 15px 0;
+    padding: 8px 15px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.2) 0%, transparent 100%);
+    border-left: 4px solid #d4af37;
+    border-radius: 0 6px 6px 0;
+}
+
+.shensha-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.shensha-item {
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(139, 69, 19, 0.3);
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, rgba(244, 229, 194, 0.9) 0%, rgba(238, 217, 173, 0.85) 100%);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.shensha-item.auspicious {
+    border-color: rgba(34, 139, 34, 0.4);
+    background: linear-gradient(135deg, rgba(230, 244, 224, 0.9) 0%, rgba(217, 238, 206, 0.85) 100%);
+}
+
+.shensha-item.neutral {
+    border-color: rgba(255, 165, 0, 0.4);
+    background: linear-gradient(135deg, rgba(255, 248, 224, 0.9) 0%, rgba(255, 238, 173, 0.85) 100%);
+}
+
+.shensha-item.inauspicious {
+    border-color: rgba(220, 20, 60, 0.4);
+    background: linear-gradient(135deg, rgba(244, 224, 224, 0.9) 0%, rgba(238, 206, 206, 0.85) 100%);
+}
+
+.shensha-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+}
+
+.shensha-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.shensha-item.auspicious .shensha-name { color: #2d5016; }
+.shensha-item.neutral .shensha-name { color: #b8860b; }
+.shensha-item.inauspicious .shensha-name { color: #8b1a1a; }
+
+.shensha-type {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(212, 175, 55, 0.2);
+    color: #8b4513;
+}
+
+.shensha-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.shensha-description {
+    color: #3d2817;
+    font-weight: 500;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.shensha-effect {
+    color: #5d4037;
+    font-weight: 500;
+    font-style: italic;
+    margin: 0;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(139, 69, 19, 0.2);
+}
+
+.shensha-empty {
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(244, 229, 194, 0.8) 0%, rgba(238, 217, 173, 0.7) 100%);
+    border-radius: 10px;
+    border: 2px solid rgba(139, 69, 19, 0.3);
+    text-align: center;
+}
+
+.empty-text {
+    color: #3d2817;
+    font-weight: 500;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* 理论依据样式 */
+.theory-reference {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(184, 134, 11, 0.05) 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.theory-title {
+    color: #8b4513;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.theory-text {
+    color: #5d4037;
+    font-weight: 500;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0;
+    font-style: italic;
 }
 
 .advanced-content strong {

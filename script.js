@@ -1583,87 +1583,204 @@ function displayAdvancedAnalysis(bazi, wuxingCount) {
     // 用神分析
     const yongshenAnalysis = findYongShen(bazi, wuxingCount);
     document.getElementById('yongshenAnalysis').innerHTML = `
-        <h4>用神判断</h4>
-        <p>${yongshenAnalysis.reasoning}</p>
-        <p class="yongshen-primary">主用神：${yongshenAnalysis.primary || '待定'}</p>
-        ${yongshenAnalysis.secondary ? `<p class="yongshen-secondary">次用神：${yongshenAnalysis.secondary}</p>` : ''}
-        <p>${yongshenAnalysis.advice}</p>
-        <div style="margin-top: 15px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;">
-            <p style="font-size: 0.9rem; color: #daa520;">
-                <strong>理论依据：</strong>基于《滴天髓》调候理论、《穷通宝鉴》用神学说，
-                结合日主强弱、月令时节、五行平衡综合判断。
-            </p>
+        <div class="yongshen-container">
+            <h4 class="analysis-title">用神判断</h4>
+
+            <div class="analysis-section">
+                <h5 class="section-subtitle">命局分析</h5>
+                <p class="analysis-text">${yongshenAnalysis.reasoning}</p>
+            </div>
+
+            <div class="yongshen-results">
+                <div class="yongshen-item">
+                    <span class="yongshen-label">主用神：</span>
+                    <span class="yongshen-primary">${yongshenAnalysis.primary || '待定'}</span>
+                </div>
+                ${yongshenAnalysis.secondary ? `
+                <div class="yongshen-item">
+                    <span class="yongshen-label">次用神：</span>
+                    <span class="yongshen-secondary">${yongshenAnalysis.secondary}</span>
+                </div>
+                ` : ''}
+            </div>
+
+            <div class="analysis-section">
+                <h5 class="section-subtitle">用神建议</h5>
+                <p class="analysis-text">${yongshenAnalysis.advice}</p>
+            </div>
+
+            <div class="theory-reference">
+                <h6 class="theory-title">📚 理论依据</h6>
+                <p class="theory-text">
+                    基于《滴天髓》调候理论、《穷通宝鉴》用神学说，
+                    结合日主强弱、月令时节、五行平衡综合判断。
+                </p>
+            </div>
         </div>
     `;
 
     // 格局分析
     const gejuAnalysis = analyzeGeju(bazi);
-    let gejuHTML = '<h4>格局判断</h4>';
+    let gejuHTML = `
+    <div class="geju-container">
+        <h4 class="analysis-title">格局判断</h4>
+    `;
 
     if (gejuAnalysis.length > 0) {
-        gejuAnalysis.forEach(geju => {
+        gejuHTML += '<div class="geju-results">';
+        gejuAnalysis.forEach((geju, index) => {
             gejuHTML += `
                 <div class="geju-item">
-                    <span class="geju-quality ${geju.quality}">${geju.quality}</span>
-                    <h5 style="color: #ffd700; margin-bottom: 10px;">${geju.name}</h5>
-                    <p><strong>格局特点：</strong>${geju.description}</p>
-                    <p><strong>性格特征：</strong>${geju.characteristics}</p>
-                    <p><strong>格局强度：</strong><span style="color: #daa520;">${geju.strength}</span></p>
+                    <div class="geju-header">
+                        <h5 class="geju-name">${geju.name}</h5>
+                        <span class="geju-quality ${geju.quality}">${geju.quality}</span>
+                    </div>
+                    <div class="geju-details">
+                        <div class="geju-detail-item">
+                            <span class="detail-label">格局特点：</span>
+                            <span class="detail-text">${geju.description}</span>
+                        </div>
+                        <div class="geju-detail-item">
+                            <span class="detail-label">性格特征：</span>
+                            <span class="detail-text">${geju.characteristics}</span>
+                        </div>
+                        <div class="geju-detail-item">
+                            <span class="detail-label">格局强度：</span>
+                            <span class="geju-strength">${geju.strength}</span>
+                        </div>
+                    </div>
                 </div>
             `;
         });
+        gejuHTML += '</div>';
     } else {
         gejuHTML += `
-            <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <p style="color: #e8dcc0;">您的八字格局较为特殊，不常见于传统格局之中。
-                这通常意味着您具有独特的个性和命运轨迹，建议结合整体命局综合分析。</p>
+            <div class="geju-special">
+                <p class="special-text">
+                    您的八字格局较为特殊，不常见于传统格局之中。
+                    这通常意味着您具有独特的个性和命运轨迹，建议结合整体命局综合分析。
+                </p>
             </div>
         `;
     }
 
     gejuHTML += `
-        <div style="margin-top: 15px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;">
-            <p style="font-size: 0.9rem; color: #daa520;">
-                <strong>理论依据：</strong>基于《子平真诠》格局理论、《渊海子平》八字格局，
+        <div class="theory-reference">
+            <h6 class="theory-title">📚 理论依据</h6>
+            <p class="theory-text">
+                基于《子平真诠》格局理论、《渊海子平》八字格局，
                 分析四柱干支配合，判断命局高低贵贱。
             </p>
         </div>
+    </div>
     `;
     document.getElementById('gejuAnalysis').innerHTML = gejuHTML;
 
     // 神煞分析
     const shenshaAnalysis = analyzeShenSha(bazi);
-    let shenshaHTML = '<h4>神煞星宿</h4>';
+    let shenshaHTML = `
+    <div class="shensha-container">
+        <h4 class="analysis-title">神煞星宿</h4>
+    `;
 
     if (shenshaAnalysis.length > 0) {
         shenshaHTML += '<div class="shensha-grid">';
-        shenshaAnalysis.forEach(shensha => {
+
+        // 分类神煞
+        const auspiciousShensha = shenshaAnalysis.filter(s => s.type === '贵人' || s.type === '文贵');
+        const neutralShensha = shenshaAnalysis.filter(s => s.type === '桃花');
+        const inauspiciousShensha = shenshaAnalysis.filter(s => s.type === '煞星');
+
+        if (auspiciousShensha.length > 0) {
             shenshaHTML += `
-                <div class="shensha-item">
-                    <div class="shensha-name">${shensha.name}</div>
-                    <div class="shensha-type">${shensha.type}</div>
-                    <div class="shensha-description">${shensha.description}</div>
-                    <div class="shensha-effect">${shensha.effect}</div>
-                </div>
+                <div class="shensha-category">
+                    <h5 class="category-title">吉神（贵人相助）</h5>
+                    <div class="shensha-items">
             `;
-        });
+            auspiciousShensha.forEach(shensha => {
+                shenshaHTML += `
+                    <div class="shensha-item auspicious">
+                        <div class="shensha-header">
+                            <div class="shensha-name">${shensha.name}</div>
+                            <div class="shensha-type">${shensha.type}</div>
+                        </div>
+                        <div class="shensha-content">
+                            <p class="shensha-description">${shensha.description}</p>
+                            <p class="shensha-effect">${shensha.effect}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            shenshaHTML += '</div></div>';
+        }
+
+        if (neutralShensha.length > 0) {
+            shenshaHTML += `
+                <div class="shensha-category">
+                    <h5 class="category-title">桃花（感情缘分）</h5>
+                    <div class="shensha-items">
+            `;
+            neutralShensha.forEach(shensha => {
+                shenshaHTML += `
+                    <div class="shensha-item neutral">
+                        <div class="shensha-header">
+                            <div class="shensha-name">${shensha.name}</div>
+                            <div class="shensha-type">${shensha.type}</div>
+                        </div>
+                        <div class="shensha-content">
+                            <p class="shensha-description">${shensha.description}</p>
+                            <p class="shensha-effect">${shensha.effect}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            shenshaHTML += '</div></div>';
+        }
+
+        if (inauspiciousShensha.length > 0) {
+            shenshaHTML += `
+                <div class="shensha-category">
+                    <h5 class="category-title">煞星（需要注意）</h5>
+                    <div class="shensha-items">
+            `;
+            inauspiciousShensha.forEach(shensha => {
+                shenshaHTML += `
+                    <div class="shensha-item inauspicious">
+                        <div class="shensha-header">
+                            <div class="shensha-name">${shensha.name}</div>
+                            <div class="shensha-type">${shensha.type}</div>
+                        </div>
+                        <div class="shensha-content">
+                            <p class="shensha-description">${shensha.description}</p>
+                            <p class="shensha-effect">${shensha.effect}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            shenshaHTML += '</div></div>';
+        }
+
         shenshaHTML += '</div>';
     } else {
         shenshaHTML += `
-            <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <p style="color: #e8dcc0;">您的八字中神煞较少，命局相对清纯。
-                这通常意味着命运较为平稳，少有大的波折和起伏。</p>
+            <div class="shensha-empty">
+                <p class="empty-text">
+                    您的八字中神煞较少，命局相对清纯。
+                    这通常意味着命运较为平稳，少有大的波折和起伏。
+                </p>
             </div>
         `;
     }
 
     shenshaHTML += `
-        <div style="margin-top: 15px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;">
-            <p style="font-size: 0.9rem; color: #daa520;">
-                <strong>理论依据：</strong>基于《神峰通考》神煞系统、《三命通会》神煞论，
+        <div class="theory-reference">
+            <h6 class="theory-title">📚 理论依据</h6>
+            <p class="theory-text">
+                基于《神峰通考》神煞系统、《三命通会》神煞论，
                 分析吉凶神煞对命运的影响和作用。
             </p>
         </div>
+    </div>
     `;
     document.getElementById('shenshaAnalysis').innerHTML = shenshaHTML;
 }
