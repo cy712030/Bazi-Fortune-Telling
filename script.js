@@ -477,7 +477,6 @@ function calculateDayMasterStrength(bazi, wuxingCount) {
 
     // 3. 得势（天干）- 权重20%
     const dayWuxingCount = wuxingCount[dayWuxing] || 0;
-    const otherTianganCount = 8 - dayWuxingCount; // 除去日干的7个天干
     if (dayWuxingCount >= 3) {
         strengthScore += 0.2;
         factors.push(`天干有${dayWuxingCount}个${dayWuxing}，得势`);
@@ -738,6 +737,7 @@ function findYongShen(bazi, wuxingCount) {
         }
     } else {
         // 日主弱，需生扶
+        const dayWuxingCount = wuxingCount[dayWuxing] || 0;
         reasoning += `日主${dayWuxing}只有${dayWuxingCount}个，较弱，需要生、扶的五行来增强。`;
 
         // 优先考虑生扶
