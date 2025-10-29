@@ -1573,6 +1573,9 @@ function displayResults(bazi, wuxingCount, dayunList, liunianList, gender, nameW
     // 显示结果区域
     document.querySelector('.input-section').style.display = 'none';
     document.getElementById('results').style.display = 'block';
+
+    // 显示大师印章
+    document.getElementById('masterSeal').style.display = 'flex';
 }
 
 // 显示高级命理分析

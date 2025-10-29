@@ -7,13 +7,14 @@
 
 body {
     font-family: 'KaiTi', 'STKaiti', 'Microsoft YaHei', serif;
-    background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: linear-gradient(to bottom, #0a0a0a 0%, #1a1620 30%, #2a2438 70%, #1f1a2e 100%);
     background-attachment: fixed;
     min-height: 100vh;
     padding: 20px;
     line-height: 1.8;
     position: relative;
     overflow-x: hidden;
+    color: #f4e5c2; /* 古纸黄白色，提高对比度 */
 }
 
 /* 背景装饰 - 传统纹样 */
@@ -25,8 +26,32 @@ body::before {
     right: 0;
     bottom: 0;
     background-image:
-        radial-gradient(circle at 20% 50%, rgba(218, 165, 32, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.03) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(218, 165, 32, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.05) 0%, transparent 50%),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(218, 165, 32, 0.01) 10px,
+            rgba(218, 165, 32, 0.01) 20px
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 增加传统纹理 */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" font-size="80" fill="rgba(218,165,32,0.02)" font-family="serif">卦</text></svg>');
+    background-size: 200px 200px;
+    background-position: 0 0, 100px 100px;
+    opacity: 0.5;
     pointer-events: none;
     z-index: 0;
 }
@@ -38,13 +63,30 @@ body::before {
     z-index: 1;
 }
 
-/* 头部样式 */
+/* 头部样式 - 大师风范 */
 header {
     text-align: center;
-    color: #daa520;
+    color: #d4af37; /* 皇家金色 */
     margin-bottom: 40px;
-    padding: 30px 20px;
+    padding: 40px 20px;
     position: relative;
+    background: linear-gradient(135deg, rgba(139, 69, 19, 0.15) 0%, rgba(0, 0, 0, 0.05) 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* 增加传统边框装饰 */
+header::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 5px;
+    pointer-events: none;
 }
 
 header::after {
@@ -64,60 +106,100 @@ header::after {
 }
 
 header h1 {
-    font-size: 3rem;
+    font-size: 3.2rem;
     margin-bottom: 15px;
-    text-shadow: 2px 2px 8px rgba(218, 165, 32, 0.5);
-    letter-spacing: 8px;
-    font-weight: 400;
-    background: linear-gradient(135deg, #daa520 0%, #ffd700 50%, #daa520 100%);
+    text-shadow: 3px 3px 12px rgba(212, 175, 55, 0.6), 0 0 20px rgba(212, 175, 55, 0.3);
+    letter-spacing: 6px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 30%, #d4af37 60%, #b8860b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 .subtitle {
-    font-size: 1.1rem;
-    color: #b8860b;
-    opacity: 0.9;
-    letter-spacing: 3px;
+    font-size: 1.2rem;
+    color: #d4af37;
+    opacity: 0.95;
+    letter-spacing: 4px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    font-weight: 500;
 }
 
-/* 卡片样式 - 传统纸张质感 */
+/* 卡片样式 - 传统宣纸质感 */
 .card {
-    background: linear-gradient(to bottom, #fdfbf7 0%, #f5f1e8 100%);
-    border-radius: 12px;
-    padding: 35px;
+    background:
+        linear-gradient(135deg, rgba(244, 229, 194, 0.95) 0%, rgba(238, 217, 173, 0.92) 50%, rgba(230, 205, 162, 0.9) 100%),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 69, 19, 0.02) 2px,
+            rgba(139, 69, 19, 0.02) 4px
+        );
+    border-radius: 8px;
+    padding: 40px;
     box-shadow:
-        0 10px 40px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.8);
-    margin-bottom: 30px;
-    animation: fadeIn 0.6s ease-in;
-    border: 1px solid rgba(218, 165, 32, 0.2);
+        0 15px 50px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.6),
+        inset 0 -1px 0 rgba(0,0,0,0.1);
+    margin-bottom: 35px;
+    animation: fadeIn 0.8s ease-in;
+    border: 2px solid rgba(139, 69, 19, 0.3);
     position: relative;
+    color: #2c1810; /* 深褐色文字，增强可读性 */
 }
 
-/* 卡片四角装饰 */
+/* 卡片四角装饰 - 传统纹样 */
 .card::before,
-.card::after {
-    content: '';
+.card::after,
+.card-corner-1,
+.card-corner-2,
+.card-corner-3,
+.card-corner-4 {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(218, 165, 32, 0.3);
+    width: 25px;
+    height: 25px;
+    border: 3px solid rgba(139, 69, 19, 0.4);
 }
 
 .card::before {
-    top: 10px;
-    left: 10px;
+    content: '';
+    top: 12px;
+    left: 12px;
     border-right: none;
     border-bottom: none;
+    background: linear-gradient(45deg, transparent 45%, rgba(139, 69, 19, 0.1) 45%);
 }
 
 .card::after {
-    bottom: 10px;
-    right: 10px;
+    content: '';
+    bottom: 12px;
+    right: 12px;
     border-left: none;
     border-top: none;
+    background: linear-gradient(225deg, transparent 45%, rgba(139, 69, 19, 0.1) 45%);
+}
+
+/* 增加四角传统纹样 */
+.card-corner-1::before {
+    content: '卍';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 16px;
+    color: rgba(139, 69, 19, 0.3);
+    transform: rotate(45deg);
+}
+
+.card-corner-2::after {
+    content: '卍';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-size: 16px;
+    color: rgba(139, 69, 19, 0.3);
+    transform: rotate(225deg);
 }
 
 @keyframes fadeIn {
@@ -601,20 +683,28 @@ footer {
     font-size: 0.95rem;
 }
 
-/* 高级命理分析样式 */
+/* 高级命理分析样式 - 大师手笔 */
 .advanced-analysis {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 30px;
 }
 
 .analysis-item.advanced {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(218, 165, 32, 0.05) 100%);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    border-radius: 12px;
-    padding: 20px;
+    background: linear-gradient(135deg,
+        rgba(244, 229, 194, 0.95) 0%,
+        rgba(238, 217, 173, 0.92) 50%,
+        rgba(230, 205, 162, 0.9) 100%);
+    border: 2px solid rgba(139, 69, 19, 0.4);
+    border-radius: 10px;
+    padding: 30px;
     position: relative;
     overflow: hidden;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        inset 0 -1px 0 rgba(0,0,0,0.1);
+    color: #2c1810; /* 深褐色文字，增强可读性 */
 }
 
 .analysis-item.advanced::before {
@@ -623,9 +713,14 @@ footer {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #ffd700, transparent);
-    animation: shimmer 3s ease-in-out infinite;
+    height: 4px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(139, 69, 19, 0.3) 20%,
+        rgba(212, 175, 55, 0.6) 50%,
+        rgba(139, 69, 19, 0.3) 80%,
+        transparent 100%);
+    animation: shimmer 4s ease-in-out infinite;
 }
 
 @keyframes shimmer {
@@ -634,66 +729,96 @@ footer {
 }
 
 .advanced-content {
-    line-height: 1.8;
-    color: #f5f1e8;
+    line-height: 1.9;
+    color: #2c1810; /* 深褐色，增强可读性 */
+    font-size: 1.05rem; /* 稍微增大字体 */
 }
 
 .advanced-content h4 {
-    color: #ffd700;
-    margin: 15px 0 8px 0;
-    font-size: 1.1rem;
-    border-left: 3px solid #ffd700;
-    padding-left: 10px;
+    color: #8b4513; /* 深棕色标题 */
+    margin: 20px 0 12px 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border-left: 4px solid #d4af37; /* 皇家金色边框 */
+    padding-left: 15px;
+    background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+    padding: 8px 15px;
+    border-radius: 0 4px 4px 0;
 }
 
 .advanced-content p {
-    margin: 10px 0;
+    margin: 12px 0;
     text-align: justify;
+    color: #3d2817; /* 稍浅的深褐色 */
+    font-weight: 500;
+}
+
+.advanced-content strong {
+    color: #8b4513; /* 深棕色强调 */
+    font-weight: bold;
 }
 
 .advanced-content ul {
-    margin: 10px 0;
-    padding-left: 20px;
+    margin: 12px 0;
+    padding-left: 25px;
 }
 
 .advanced-content li {
-    margin: 8px 0;
-    color: #e8dcc0;
+    margin: 10px 0;
+    color: #3d2817;
+    font-weight: 500;
 }
 
 /* 用神分析特殊样式 */
 .yongshen-primary {
-    color: #ffd700;
+    color: #8b4513; /* 深棕色主用神 */
     font-weight: bold;
-    font-size: 1.1rem;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.2);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, transparent 100%);
+    padding: 5px 10px;
+    border-radius: 4px;
+    border-left: 3px solid #d4af37;
+    display: inline-block;
 }
 
 .yongshen-secondary {
-    color: #daa520;
+    color: #a0522d; /* 次用神稍浅 */
     font-weight: bold;
+    font-size: 1.1rem;
+    background: rgba(212, 175, 55, 0.1);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 5px;
 }
 
-/* 格局分析样式 */
+/* 格局分析样式 - 古朴风格 */
 .geju-item {
-    background: rgba(255, 215, 0, 0.1);
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg,
+        rgba(244, 229, 194, 0.8) 0%,
+        rgba(238, 217, 173, 0.7) 100%);
+    border: 2px solid rgba(139, 69, 19, 0.3);
     border-radius: 8px;
-    padding: 15px;
-    margin: 15px 0;
+    padding: 20px;
+    margin: 20px 0;
     position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    color: #3d2817;
 }
 
 .geju-quality {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #ffd700;
-    color: #1a1a2e;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+    color: #2c1810;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9rem;
     font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(139, 69, 19, 0.3);
 }
 
 .geju-quality.上格 {
@@ -709,53 +834,188 @@ footer {
     background: linear-gradient(135deg, #b8860b, #daa520);
 }
 
-/* 神煞分析样式 */
+/* 神煞分析样式 - 古典韵味 */
 .shensha-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin: 15px 0;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 20px 0;
 }
 
 .shensha-item {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 15px;
+    background: linear-gradient(135deg,
+        rgba(244, 229, 194, 0.9) 0%,
+        rgba(238, 217, 173, 0.85) 100%);
+    border: 2px solid rgba(139, 69, 19, 0.3);
+    border-radius: 10px;
+    padding: 20px;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.shensha-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        rgba(139, 69, 19, 0.3) 0%,
+        rgba(212, 175, 55, 0.6) 50%,
+        rgba(139, 69, 19, 0.3) 100%);
+    border-radius: 10px 10px 0 0;
 }
 
 .shensha-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-    border-color: rgba(255, 215, 0, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: rgba(212, 175, 55, 0.5);
 }
 
 .shensha-name {
-    color: #ffd700;
+    color: #8b4513;
     font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 8px;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(139, 69, 19, 0.1);
 }
 
 .shensha-type {
-    font-size: 0.9rem;
-    color: #daa520;
-    margin-bottom: 5px;
+    font-size: 0.95rem;
+    color: #a0522d;
+    margin-bottom: 8px;
+    font-weight: 500;
 }
 
 .shensha-description {
-    font-size: 0.85rem;
-    color: #e8dcc0;
-    line-height: 1.4;
+    font-size: 0.9rem;
+    color: #3d2817;
+    line-height: 1.5;
+    font-weight: 500;
 }
 
 .shensha-effect {
-    font-size: 0.85rem;
-    color: #d4af37;
-    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #8b4513;
+    margin-top: 10px;
     font-style: italic;
+    font-weight: 500;
+    border-top: 1px solid rgba(139, 69, 19, 0.2);
+    padding-top: 8px;
+}
+
+/* 传统印章和装饰元素 */
+.master-seal {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+    opacity: 0.8;
+    transform: rotate(-5deg);
+    z-index: 1000;
+    pointer-events: none;
+    font-family: 'KaiTi', 'STKaiti', serif;
+    border: 2px solid #8b0000;
+}
+
+.master-seal::before {
+    content: '大师';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+}
+
+.master-seal::after {
+    content: '手笔';
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+}
+
+/* 增加传统边框装饰 */
+.result-section {
+    position: relative;
+}
+
+.result-section::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg,
+        transparent 30%,
+        rgba(212, 175, 55, 0.3) 50%,
+        transparent 70%);
+    border-radius: 10px;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+/* 增加传统纹理背景 */
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 69, 19, 0.01) 2px,
+            rgba(139, 69, 19, 0.01) 4px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(139, 69, 19, 0.01) 2px,
+            rgba(139, 69, 19, 0.01) 4px
+        );
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+/* 标题特殊装饰 */
+.result-section h2 {
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.result-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg,
+        #d4af37 0%,
+        #ffd700 50%,
+        #d4af37 100%);
+    border-radius: 2px;
 }
 
 /* 响应式设计 */
