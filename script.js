@@ -545,9 +545,16 @@ function findYongShen(bazi, wuxingCount) {
                 if (WUXING_SHENGKE[dayWuxing].ke === yong ||
                     WUXING_SHENGKE[dayWuxing].sheng === yong) {
                     yongShenAnalysis.primary = yong;
+                    reasoning += `考虑五行生克，选择${yong}作为用神来平衡日主。`;
                     break;
                 }
             }
+        }
+
+        // 如果还是没有找到，直接选择第一个调候用神
+        if (!yongShenAnalysis.primary && tiaohou.length > 0) {
+            yongShenAnalysis.primary = tiaohou[0];
+            reasoning += `综合考虑，选择${tiaohou[0]}作为主要用神。`;
         }
     } else {
         // 日主弱，需生扶
@@ -568,6 +575,17 @@ function findYongShen(bazi, wuxingCount) {
                     reasoning += `同时考虑调候需要，选用${yong}为用神。`;
                     break;
                 }
+            }
+        }
+
+        // 如果还是没有找到，直接选择调候用神的第一个或生扶用神
+        if (!yongShenAnalysis.primary) {
+            if (tiaohou.length > 0) {
+                yongShenAnalysis.primary = tiaohou[0];
+                reasoning += `综合考虑，选择${tiaohou[0]}作为主要用神来调候日主。`;
+            } else {
+                yongShenAnalysis.primary = shengWuxing;
+                reasoning += `选择${shengWuxing}作为主要用神来生扶日主。`;
             }
         }
     }
@@ -1564,11 +1582,11 @@ function displayResults(bazi, wuxingCount, dayunList, liunianList, gender, nameW
     displayAdvancedAnalysis(bazi, wuxingCount);
 
     // 显示命理分析
-    document.getElementById('personalityAnalysis').textContent = analyzePersonality(bazi, wuxingCount);
-    document.getElementById('careerAnalysis').textContent = analyzeCareer(bazi, wuxingCount);
-    document.getElementById('wealthAnalysis').textContent = analyzeWealth(bazi, wuxingCount);
-    document.getElementById('marriageAnalysis').textContent = analyzeMarriage(bazi, wuxingCount, gender);
-    document.getElementById('healthAnalysis').textContent = analyzeHealth(bazi, wuxingCount);
+    displayFormattedAnalysis('personalityAnalysis', analyzePersonality(bazi, wuxingCount));
+    displayFormattedAnalysis('careerAnalysis', analyzeCareer(bazi, wuxingCount));
+    displayFormattedAnalysis('wealthAnalysis', analyzeWealth(bazi, wuxingCount));
+    displayFormattedAnalysis('marriageAnalysis', analyzeMarriage(bazi, wuxingCount, gender));
+    displayFormattedAnalysis('healthAnalysis', analyzeHealth(bazi, wuxingCount));
 
     // 显示结果区域
     document.querySelector('.input-section').style.display = 'none';
@@ -1576,6 +1594,25 @@ function displayResults(bazi, wuxingCount, dayunList, liunianList, gender, nameW
 
     // 显示大师印章
     document.getElementById('masterSeal').style.display = 'flex';
+}
+
+// 格式化显示命理分析（处理【】标题换行）
+function displayFormattedAnalysis(elementId, analysisText) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    // 将【】标题转换为HTML，每个标题独立一行显示
+    const formattedText = analysisText
+        .replace(/【([^】]+)】/g, '<div class="analysis-section-title">【$1】</div>')
+        .replace(/\n\n/g, '</div><div class="analysis-paragraph">')
+        .replace(/\n/g, '<br>');
+
+    // 包装内容
+    element.innerHTML = `
+        <div class="analysis-content">
+            <div class="analysis-paragraph">${formattedText}</div>
+        </div>
+    `;
 }
 
 // 显示高级命理分析
@@ -1686,79 +1723,30 @@ function displayAdvancedAnalysis(bazi, wuxingCount) {
     if (shenshaAnalysis.length > 0) {
         shenshaHTML += '<div class="shensha-grid">';
 
-        // 分类神煞
-        const auspiciousShensha = shenshaAnalysis.filter(s => s.type === '贵人' || s.type === '文贵');
-        const neutralShensha = shenshaAnalysis.filter(s => s.type === '桃花');
-        const inauspiciousShensha = shenshaAnalysis.filter(s => s.type === '煞星');
+        // 直接按顺序显示所有神煞，每个神煞独立成一个卡片
+        shenshaAnalysis.forEach(shensha => {
+            let itemClass = 'shensha-item';
+            if (shensha.type === '贵人' || shensha.type === '文贵') {
+                itemClass += ' auspicious';
+            } else if (shensha.type === '桃花') {
+                itemClass += ' neutral';
+            } else if (shensha.type === '煞星') {
+                itemClass += ' inauspicious';
+            }
 
-        if (auspiciousShensha.length > 0) {
             shenshaHTML += `
-                <div class="shensha-category">
-                    <h5 class="category-title">吉神（贵人相助）</h5>
-                    <div class="shensha-items">
-            `;
-            auspiciousShensha.forEach(shensha => {
-                shenshaHTML += `
-                    <div class="shensha-item auspicious">
-                        <div class="shensha-header">
-                            <div class="shensha-name">${shensha.name}</div>
-                            <div class="shensha-type">${shensha.type}</div>
-                        </div>
-                        <div class="shensha-content">
-                            <p class="shensha-description">${shensha.description}</p>
-                            <p class="shensha-effect">${shensha.effect}</p>
-                        </div>
+                <div class="${itemClass}">
+                    <div class="shensha-header">
+                        <div class="shensha-name">${shensha.name}</div>
+                        <div class="shensha-type">${shensha.type}</div>
                     </div>
-                `;
-            });
-            shenshaHTML += '</div></div>';
-        }
-
-        if (neutralShensha.length > 0) {
-            shenshaHTML += `
-                <div class="shensha-category">
-                    <h5 class="category-title">桃花（感情缘分）</h5>
-                    <div class="shensha-items">
-            `;
-            neutralShensha.forEach(shensha => {
-                shenshaHTML += `
-                    <div class="shensha-item neutral">
-                        <div class="shensha-header">
-                            <div class="shensha-name">${shensha.name}</div>
-                            <div class="shensha-type">${shensha.type}</div>
-                        </div>
-                        <div class="shensha-content">
-                            <p class="shensha-description">${shensha.description}</p>
-                            <p class="shensha-effect">${shensha.effect}</p>
-                        </div>
+                    <div class="shensha-content">
+                        <p class="shensha-description">${shensha.description}</p>
+                        <p class="shensha-effect">${shensha.effect}</p>
                     </div>
-                `;
-            });
-            shenshaHTML += '</div></div>';
-        }
-
-        if (inauspiciousShensha.length > 0) {
-            shenshaHTML += `
-                <div class="shensha-category">
-                    <h5 class="category-title">煞星（需要注意）</h5>
-                    <div class="shensha-items">
+                </div>
             `;
-            inauspiciousShensha.forEach(shensha => {
-                shenshaHTML += `
-                    <div class="shensha-item inauspicious">
-                        <div class="shensha-header">
-                            <div class="shensha-name">${shensha.name}</div>
-                            <div class="shensha-type">${shensha.type}</div>
-                        </div>
-                        <div class="shensha-content">
-                            <p class="shensha-description">${shensha.description}</p>
-                            <p class="shensha-effect">${shensha.effect}</p>
-                        </div>
-                    </div>
-                `;
-            });
-            shenshaHTML += '</div></div>';
-        }
+        });
 
         shenshaHTML += '</div>';
     } else {
