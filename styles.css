@@ -1,0 +1,657 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'KaiTi', 'STKaiti', 'Microsoft YaHei', serif;
+    background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.8;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 背景装饰 - 传统纹样 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(218, 165, 32, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(218, 165, 32, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* 头部样式 */
+header {
+    text-align: center;
+    color: #daa520;
+    margin-bottom: 40px;
+    padding: 30px 20px;
+    position: relative;
+}
+
+header::after {
+    content: '☯';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    opacity: 0.3;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(360deg); }
+}
+
+header h1 {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(218, 165, 32, 0.5);
+    letter-spacing: 8px;
+    font-weight: 400;
+    background: linear-gradient(135deg, #daa520 0%, #ffd700 50%, #daa520 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #b8860b;
+    opacity: 0.9;
+    letter-spacing: 3px;
+}
+
+/* 卡片样式 - 传统纸张质感 */
+.card {
+    background: linear-gradient(to bottom, #fdfbf7 0%, #f5f1e8 100%);
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    margin-bottom: 30px;
+    animation: fadeIn 0.6s ease-in;
+    border: 1px solid rgba(218, 165, 32, 0.2);
+    position: relative;
+}
+
+/* 卡片四角装饰 */
+.card::before,
+.card::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(218, 165, 32, 0.3);
+}
+
+.card::before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.card::after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 表单样式 */
+.input-section h2 {
+    color: #8b4513;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    text-align: center;
+    letter-spacing: 4px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.input-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #daa520, transparent);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #5d4037;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #d7ccc8;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fdfbf7;
+    color: #3e2723;
+    font-family: 'Microsoft YaHei', sans-serif;
+}
+
+.form-group input[type="date"] {
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #daa520;
+    box-shadow: 0 0 0 3px rgba(218, 165, 32, 0.1);
+    background: #fff;
+}
+
+/* 历法选择器样式 */
+.calendar-type-selector {
+    display: flex;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 15px;
+    border: 2px solid #d7ccc8;
+    border-radius: 6px;
+    background: #fdfbf7;
+    transition: all 0.3s ease;
+}
+
+.radio-label:hover {
+    border-color: #daa520;
+    background: #fff;
+}
+
+.radio-label input[type="radio"] {
+    width: auto;
+    margin-right: 8px;
+    cursor: pointer;
+    accent-color: #daa520;
+}
+
+.radio-label input[type="radio"]:checked + span {
+    color: #8b4513;
+    font-weight: 600;
+}
+
+.radio-label span {
+    color: #5d4037;
+    transition: all 0.3s ease;
+}
+
+/* 复选框样式 */
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    cursor: pointer;
+    accent-color: #daa520;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+}
+
+/* 日期提示文字 */
+.date-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #8b6914;
+    font-style: italic;
+}
+
+/* 按钮样式 */
+.btn-primary,
+.btn-secondary {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    letter-spacing: 3px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+    color: #ffd700;
+    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+    border: 1px solid #daa520;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(218, 165, 32, 0.5);
+    background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 100%);
+    color: #8b4513;
+    border: 2px solid #d7ccc8;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #e8dcc8 0%, #f5f1e8 100%);
+    border-color: #daa520;
+}
+
+/* 结果区域样式 */
+.results {
+    animation: fadeIn 0.6s ease-in;
+}
+
+.result-section h2 {
+    color: #8b4513;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    border-bottom: none;
+    padding-bottom: 15px;
+    text-align: center;
+    letter-spacing: 4px;
+    position: relative;
+}
+
+.result-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #daa520, transparent);
+}
+
+/* 八字展示 - 传统竹简风格 */
+.bazi-display {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.bazi-pillar {
+    text-align: center;
+    background: linear-gradient(180deg, #d4a574 0%, #c19a6b 100%);
+    padding: 25px 15px;
+    border-radius: 8px;
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    border: 2px solid #8b6914;
+    position: relative;
+}
+
+.bazi-pillar::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border: 1px solid rgba(139, 69, 19, 0.2);
+    border-radius: 6px;
+}
+
+.pillar-label {
+    font-size: 0.9rem;
+    color: #5d4037;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+.pillar-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #3e2723;
+    letter-spacing: 8px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+    font-family: 'KaiTi', 'STKaiti', serif;
+}
+
+.bazi-details {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #daa520;
+    color: #5d4037;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 五行图表 - 传统五行色 */
+.wuxing-chart {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.wuxing-item {
+    text-align: center;
+    padding: 20px 10px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.1);
+}
+
+.wuxing-item.wood {
+    background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+}
+
+.wuxing-item.fire {
+    background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
+}
+
+.wuxing-item.earth {
+    background: linear-gradient(135deg, #8b6914 0%, #b8860b 100%);
+}
+
+.wuxing-item.metal {
+    background: linear-gradient(135deg, #616161 0%, #9e9e9e 100%);
+}
+
+.wuxing-item.water {
+    background: linear-gradient(135deg, #01579b 0%, #0277bd 100%);
+}
+
+.wuxing-name {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.wuxing-count {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.wuxing-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.wuxing-bar-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    transition: width 0.5s ease;
+}
+
+.wuxing-analysis {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #daa520;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.wuxing-analysis h3 {
+    color: #8b4513;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.wuxing-analysis p {
+    color: #5d4037;
+    line-height: 1.8;
+}
+
+/* 大运列表 */
+.dayun-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.dayun-item {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #daa520;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.dayun-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3);
+}
+
+.dayun-item h3 {
+    color: #8b4513;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.dayun-pillar {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #5d4037;
+    margin-bottom: 10px;
+    letter-spacing: 4px;
+    font-family: 'KaiTi', 'STKaiti', serif;
+}
+
+.dayun-age {
+    color: #8b6914;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.dayun-desc {
+    color: #5d4037;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* 流年列表 */
+.liunian-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.liunian-item {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.liunian-item:hover {
+    border-color: #daa520;
+    transform: scale(1.05);
+}
+
+.liunian-year {
+    color: #8b4513;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.liunian-pillar {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #5d4037;
+    margin-bottom: 8px;
+    letter-spacing: 3px;
+    font-family: 'KaiTi', 'STKaiti', serif;
+}
+
+.liunian-desc {
+    color: #8b6914;
+    font-size: 0.85rem;
+}
+
+/* 命理分析 */
+.mingli-content {
+    display: grid;
+    gap: 20px;
+}
+
+.analysis-item {
+    background: linear-gradient(135deg, #fdfbf7 0%, #f5f1e8 100%);
+    padding: 25px;
+    border-radius: 8px;
+    border-left: 4px solid #daa520;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.analysis-item::before {
+    content: '◆';
+    position: absolute;
+    top: 25px;
+    left: -12px;
+    color: #daa520;
+    font-size: 1.2rem;
+    background: #fdfbf7;
+}
+
+.analysis-item h3 {
+    color: #8b4513;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+    letter-spacing: 3px;
+}
+
+.analysis-item p {
+    color: #5d4037;
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+/* 页脚 */
+footer {
+    text-align: center;
+    color: #daa520;
+    padding: 30px 20px;
+    opacity: 0.9;
+    margin-top: 40px;
+    letter-spacing: 2px;
+    font-size: 0.95rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .bazi-display {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wuxing-chart {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dayun-list,
+    .liunian-list {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .pillar-value {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .bazi-display {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .wuxing-chart {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 15px;
+    }
+}

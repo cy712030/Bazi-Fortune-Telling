@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八字算命系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>八字算命系统</h1>
+            <p class="subtitle">输入您的出生信息，了解命理运势</p>
+        </header>
+
+        <div class="content">
+            <!-- 输入表单 -->
+            <section class="input-section card">
+                <h2>出生信息</h2>
+                <form id="birthdayForm">
+                    <div class="form-group">
+                        <label for="name">姓名 (选填)</label>
+                        <input type="text" id="name" name="name" placeholder="请输入姓名，将结合姓名五行分析">
+                    </div>
+
+                    <div class="form-group">
+                        <label>历法选择</label>
+                        <div class="calendar-type-selector">
+                            <label class="radio-label">
+                                <input type="radio" name="calendarType" value="solar" checked>
+                                <span>阳历（公历）</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="calendarType" value="lunar">
+                                <span>农历（阴历）</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="birthdate">出生日期</label>
+                        <input type="date" id="birthdate" name="birthdate" required>
+                        <small class="date-hint">请选择出生日期（阳历或农历）</small>
+                    </div>
+
+                    <div class="form-group" id="leapMonthGroup" style="display: none;">
+                        <label>
+                            <input type="checkbox" id="isLeapMonth" name="isLeapMonth">
+                            <span>闰月</span>
+                        </label>
+                        <small class="date-hint">如果是农历闰月出生，请勾选</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hour">出生时辰</label>
+                        <select id="hour" name="hour" required>
+                            <option value="">请选择时辰</option>
+                            <option value="0">子时 (23:00-00:59)</option>
+                            <option value="1">丑时 (01:00-02:59)</option>
+                            <option value="2">寅时 (03:00-04:59)</option>
+                            <option value="3">卯时 (05:00-06:59)</option>
+                            <option value="4">辰时 (07:00-08:59)</option>
+                            <option value="5">巳时 (09:00-10:59)</option>
+                            <option value="6">午时 (11:00-12:59)</option>
+                            <option value="7">未时 (13:00-14:59)</option>
+                            <option value="8">申时 (15:00-16:59)</option>
+                            <option value="9">酉时 (17:00-18:59)</option>
+                            <option value="10">戌时 (19:00-20:59)</option>
+                            <option value="11">亥时 (21:00-22:59)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">性别</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">请选择性别</option>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary">开始算命</button>
+                </form>
+            </section>
+
+            <!-- 结果展示区域 -->
+            <div id="results" class="results" style="display: none;">
+                <!-- 八字展示 -->
+                <section class="result-section card">
+                    <h2>您的八字</h2>
+                    <div class="bazi-display">
+                        <div class="bazi-pillar">
+                            <div class="pillar-label">年柱</div>
+                            <div class="pillar-value" id="yearPillar"></div>
+                        </div>
+                        <div class="bazi-pillar">
+                            <div class="pillar-label">月柱</div>
+                            <div class="pillar-value" id="monthPillar"></div>
+                        </div>
+                        <div class="bazi-pillar">
+                            <div class="pillar-label">日柱</div>
+                            <div class="pillar-value" id="dayPillar"></div>
+                        </div>
+                        <div class="bazi-pillar">
+                            <div class="pillar-label">时柱</div>
+                            <div class="pillar-value" id="hourPillar"></div>
+                        </div>
+                    </div>
+                    <div class="bazi-details" id="baziDetails"></div>
+                </section>
+
+                <!-- 五行分析 -->
+                <section class="result-section card">
+                    <h2>五行分析</h2>
+                    <div class="wuxing-chart" id="wuxingChart"></div>
+                    <div class="wuxing-analysis" id="wuxingAnalysis"></div>
+                </section>
+
+                <!-- 姓名五行分析 (如果填写了姓名) -->
+                <section class="result-section card" id="nameAnalysisSection" style="display: none;">
+                    <h2>姓名分析</h2>
+                    <div id="nameAnalysis"></div>
+                </section>
+
+                <!-- 大运分析 -->
+                <section class="result-section card">
+                    <h2>大运分析</h2>
+                    <div class="dayun-list" id="dayunList"></div>
+                </section>
+
+                <!-- 流年分析 -->
+                <section class="result-section card">
+                    <h2>近期流年</h2>
+                    <div class="liunian-list" id="liunianList"></div>
+                </section>
+
+                <!-- 命理分析 -->
+                <section class="result-section card">
+                    <h2>命理分析</h2>
+                    <div class="mingli-content">
+                        <div class="analysis-item">
+                            <h3>性格特点</h3>
+                            <p id="personalityAnalysis"></p>
+                        </div>
+                        <div class="analysis-item">
+                            <h3>事业运势</h3>
+                            <p id="careerAnalysis"></p>
+                        </div>
+                        <div class="analysis-item">
+                            <h3>财运分析</h3>
+                            <p id="wealthAnalysis"></p>
+                        </div>
+                        <div class="analysis-item">
+                            <h3>婚姻感情</h3>
+                            <p id="marriageAnalysis"></p>
+                        </div>
+                        <div class="analysis-item">
+                            <h3>健康运势</h3>
+                            <p id="healthAnalysis"></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 重新计算按钮 -->
+                <button class="btn-secondary" onclick="resetForm()">重新计算</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>仅供娱乐参考，不构成专业命理建议</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
