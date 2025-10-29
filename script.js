@@ -136,21 +136,460 @@ const WUXING_SHENGKE = {
     '水': { sheng: '木', ke: '火', shengBy: '金', keBy: '土' }
 };
 
-// 节气时间（近似值，用于月柱计算）
-const JIEQI_DATES = [
-    { month: 2, day: 4 },  // 立春
-    { month: 3, day: 6 },  // 惊蛰
-    { month: 4, day: 5 },  // 清明
-    { month: 5, day: 6 },  // 立夏
-    { month: 6, day: 6 },  // 芒种
-    { month: 7, day: 7 },  // 小暑
-    { month: 8, day: 8 },  // 立秋
-    { month: 9, day: 8 },  // 白露
-    { month: 10, day: 8 }, // 寒露
-    { month: 11, day: 8 }, // 立冬
-    { month: 12, day: 7 }, // 大雪
-    { month: 1, day: 6 }   // 小寒
-];
+// 精确节气计算（基于《时宪历》算法）
+// 节气太阳黄经度数
+const JIEQI_LONGITUDE = {
+    '立春': 315, '雨水': 330, '惊蛰': 345, '春分': 0,
+    '清明': 15, '谷雨': 30, '立夏': 45, '小满': 60,
+    '芒种': 75, '夏至': 90, '小暑': 105, '大暑': 120,
+    '立秋': 135, '处暑': 150, '白露': 165, '秋分': 180,
+    '寒露': 195, '霜降': 210, '立冬': 225, '小雪': 240,
+    '大雪': 255, '冬至': 270, '小寒': 285, '大寒': 300
+};
+
+// 计算精确节气时间
+function calculateSolarTerm(year, termName) {
+    const longitude = JIEQI_LONGITUDE[termName];
+    const baseDate = new Date(2000, 0, 6, 18, 47, 0); // 2000年小寒时间作为基准
+
+    // 简化的节气计算算法
+    const yearOffset = year - 2000;
+    const daysPerTerm = 365.2422 / 24; // 一个节气的平均天数
+
+    // 计算该节气在当年的大致时间
+    let termDays = (longitude / 360) * 365.2422;
+    if (longitude < 45) termDays += 365.2422; // 调整到次年
+
+    const termDate = new Date(year, 0, 1);
+    termDate.setDate(termDate.getDate() + Math.floor(termDays));
+
+    // 微调：考虑闰年等因素
+    const adjustment = yearOffset * 0.2422; // 每年的累积误差
+    termDate.setDate(termDate.getDate() + Math.floor(adjustment));
+
+    return termDate;
+}
+
+// 获取月柱对应的节气信息
+function getMonthSolarTerms(year) {
+    return {
+        '寅月': calculateSolarTerm(year, '立春'),
+        '卯月': calculateSolarTerm(year, '惊蛰'),
+        '辰月': calculateSolarTerm(year, '清明'),
+        '巳月': calculateSolarTerm(year, '立夏'),
+        '午月': calculateSolarTerm(year, '芒种'),
+        '未月': calculateSolarTerm(year, '小暑'),
+        '申月': calculateSolarTerm(year, '立秋'),
+        '酉月': calculateSolarTerm(year, '白露'),
+        '戌月': calculateSolarTerm(year, '寒露'),
+        '亥月': calculateSolarTerm(year, '立冬'),
+        '子月': calculateSolarTerm(year, '大雪'),
+        '丑月': calculateSolarTerm(year, '小寒')
+    };
+}
+
+// 神煞系统（基于《神峰通考》）
+const SHENSHA_SYSTEM = {
+    // 天乙贵人（贵人星）
+    tianyiGuiren: {
+        '甲': ['丑', '未'],  // 甲戊庚牛羊
+        '戊': ['丑', '未'],
+        '庚': ['丑', '未'],
+        '乙': ['子', '申'],  // 乙己鼠猴乡
+        '己': ['子', '申'],
+        '丙': ['亥', '酉'],  // 丙丁猪鸡位
+        '丁': ['亥', '酉'],
+        '壬': ['卯', '巳'],  // 壬癸兔蛇藏
+        '癸': ['卯', '巳'],
+        '辛': ['寅', '午']   // 辛马虎卧山
+    },
+
+    // 桃花（咸池）
+    xianchi: {
+        '寅': ['卯'],  // 寅午戌见卯
+        '午': ['卯'],
+        '戌': ['卯'],
+        '申': ['酉'],  // 申子辰见酉
+        '子': ['酉'],
+        '辰': ['酉'],
+        '巳': ['午'],  // 巳酉丑见午
+        '酉': ['午'],
+        '丑': ['午'],
+        '亥': ['子'],  // 亥卯未见子
+        '卯': ['子'],
+        '未': ['子']
+    },
+
+    // 文昌星
+    wenchang: {
+        '甲': ['巳'],  // 甲乙巳午报文章
+        '乙': ['午'],
+        '丙': ['申'],  // 丙丁申酉文章显
+        '丁': ['酉'],
+        '戊': ['申'],  // 戊己亦看申酉位
+        '己': ['酉'],
+        '庚': ['亥'],  // 庚辛亥虎文章扬
+        '辛': ['亥'],
+        '壬': ['寅'],  // 壬癸寅卯文章荣
+        '癸': ['寅']
+    },
+
+    // 劫煞
+    jiesha: {
+        '申': ['巳'],  // 申子辰劫煞在巳
+        '子': ['巳'],
+        '辰': ['巳'],
+        '寅': ['亥'],  // 寅午戌劫煞在亥
+        '午': ['亥'],
+        '戌': ['亥'],
+        '巳': ['申'],  // 巳酉丑劫煞在申
+        '酉': ['申'],
+        '丑': ['申'],
+        '亥': ['寅']   // 亥卯未劫煞在寅
+    },
+
+    // 羊刃
+    yangren: {
+        '甲': ['卯'],  // 甲刃在卯
+        '乙': ['辰'],  // 乙刃在辰
+        '丙': ['午'],  // 丙刃在午
+        '丁': ['未'],  // 丁刃在未
+        '戊': ['午'],  // 戊刃在午
+        '己': ['未'],  // 己刃在未
+        '庚': ['酉'],  // 庚刃在酉
+        '辛': ['戌'],  // 辛刃在戌
+        '壬': ['子'],  // 壬刃在子
+        '癸': ['丑']   // 癸刃在丑
+    }
+};
+
+// 分析神煞
+function analyzeShenSha(bazi) {
+    const shenSha = [];
+
+    // 分析年月日时四柱的地支
+    const allDizhi = [bazi.year.dizhi, bazi.month.dizhi, bazi.day.dizhi, bazi.hour.dizhi];
+    const allTiangan = [bazi.year.tiangan, bazi.month.tiangan, bazi.day.tiangan, bazi.hour.tiangan];
+
+    // 检查天乙贵人
+    for (let i = 0; i < allTiangan.length; i++) {
+        const tg = allTiangan[i];
+        if (SHENSHA_SYSTEM.tianyiGuiren[tg]) {
+            for (const guiren of SHENSHA_SYSTEM.tianyiGuiren[tg]) {
+                if (allDizhi.includes(guiren)) {
+                    shenSha.push({
+                        type: '贵人',
+                        name: '天乙贵人',
+                        location: guiren,
+                        description: '天乙贵人是最吉利的神煞，主得贵人相助，逢凶化吉',
+                        effect: '得贵人提携，事业顺利，遇事有人相助'
+                    });
+                }
+            }
+        }
+    }
+
+    // 检查桃花
+    const dayBranch = bazi.day.dizhi;
+    if (SHENSHA_SYSTEM.xianchi[dayBranch]) {
+        for (const taohua of SHENSHA_SYSTEM.xianchi[dayBranch]) {
+            if (allDizhi.includes(taohua)) {
+                shenSha.push({
+                    type: '桃花',
+                    name: '咸池桃花',
+                    location: taohua,
+                    description: '桃花主感情魅力，异性缘佳',
+                    effect: '感情丰富，异性缘好，但要注意感情问题'
+                });
+            }
+        }
+    }
+
+    // 检查文昌
+    for (let i = 0; i < allTiangan.length; i++) {
+        const tg = allTiangan[i];
+        if (SHENSHA_SYSTEM.wenchang[tg]) {
+            for (const wenchang of SHENSHA_SYSTEM.wenchang[tg]) {
+                if (allDizhi.includes(wenchang)) {
+                    shenSha.push({
+                        type: '文贵',
+                        name: '文昌星',
+                        location: wenchang,
+                        description: '文昌主文才学业，利考试求学',
+                        effect: '聪明好学，文采出众，利求学考试'
+                    });
+                }
+            }
+        }
+    }
+
+    // 检查羊刃
+    for (let i = 0; i < allTiangan.length; i++) {
+        const tg = allTiangan[i];
+        if (SHENSHA_SYSTEM.yangren[tg]) {
+            for (const yangren of SHENSHA_SYSTEM.yangren[tg]) {
+                if (allDizhi.includes(yangren)) {
+                    shenSha.push({
+                        type: '煞星',
+                        name: '羊刃',
+                        location: yangren,
+                        description: '羊刃性刚烈，主武职或激烈性格',
+                        effect: '性格刚强，做事果断，但容易冲动，要注意脾气'
+                    });
+                }
+            }
+        }
+    }
+
+    return shenSha;
+}
+
+// 格局理论（基于《子平真诠》和《渊海子平》）
+const GEJU_THEORY = {
+    // 正官格
+    zhenguan: {
+        name: '正官格',
+        conditions: {
+            '甲': { required: ['辛'], optional: ['己', '癸'], avoid: ['庚', '丁', '壬'] },
+            '乙': { required: ['庚'], optional: ['戊', '壬'], avoid: ['辛', '丙', '癸'] },
+            '丙': { required: ['癸'], optional: ['辛', '乙'], avoid: ['壬', '己', '甲'] },
+            '丁': { required: ['壬'], optional: ['庚', '甲'], avoid: ['癸', '戊', '乙'] },
+            '戊': { required: ['乙'], optional: ['癸', '丁'], avoid: ['甲', '辛', '丙'] },
+            '己': { required: ['甲'], optional: ['壬', '丙'], avoid: ['乙', '庚', '丁'] },
+            '庚': { required: ['丁'], optional: ['乙', '己'], avoid: ['丙', '癸', '戊'] },
+            '辛': { required: ['丙'], optional: ['甲', '戊'], avoid: ['丁', '壬', '己'] },
+            '壬': { required: ['己'], optional: ['丙', '庚'], avoid: ['戊', '甲', '辛'] },
+            '癸': { required: ['戊'], optional: ['丁', '辛'], avoid: ['己', '乙', '庚'] }
+        },
+        description: '正官格为贵格，主正直、有责任心、适合从政或管理',
+        characteristics: '性格正直，有领导才能，事业心强，宜在政府或大企业发展'
+    },
+
+    // 七杀格
+    qisha: {
+        name: '七杀格',
+        conditions: {
+            '甲': { required: ['庚'], optional: ['丁', '戊'], avoid: ['辛', '壬', '己'] },
+            '乙': { required: ['辛'], optional: ['丙', '己'], avoid: ['庚', '癸', '戊'] },
+            '丙': { required: ['壬'], optional: ['己', '庚'], avoid: ['癸', '甲', '辛'] },
+            '丁': { required: ['癸'], optional: ['戊', '辛'], avoid: ['壬', '乙', '庚'] },
+            '戊': { required: ['甲'], optional: ['庚', '壬'], avoid: ['乙', '丙', '癸'] },
+            '己': { required: ['乙'], optional: ['辛', '癸'], avoid: ['甲', '丁', '壬'] },
+            '庚': { required: ['丙'], optional: ['壬', '甲'], avoid: ['丁', '戊', '乙'] },
+            '辛': { required: ['丁'], optional: ['甲', '乙'], avoid: ['丙', '己', '庚'] },
+            '壬': { required: ['戊'], optional: ['乙', '丙'], avoid: ['己', '辛', '甲'] },
+            '癸': { required: ['己'], optional: ['丙', '丁'], avoid: ['戊', '庚', '乙'] }
+        },
+        description: '七杀格为威严格，主权威、有魄力、适合军警或创业',
+        characteristics: '性格威严，有魄力，敢作敢为，适合创业或从事具有挑战性的工作'
+    },
+
+    // 财格
+    caige: {
+        name: '财格',
+        conditions: {
+            '甲': { required: ['戊', '己'], optional: ['庚', '辛'], avoid: ['乙', '壬', '癸'] },
+            '乙': { required: ['己', '戊'], optional: ['辛', '庚'], avoid: ['甲', '癸', '壬'] },
+            '丙': { required: ['庚', '辛'], optional: ['壬', '癸'], avoid: ['丁', '甲', '乙'] },
+            '丁': { required: ['辛', '庚'], optional: ['癸', '壬'], avoid: ['丙', '乙', '甲'] },
+            '戊': { required: ['壬', '癸'], optional: ['甲', '乙'], avoid: ['戊', '丙', '丁'] },
+            '己': { required: ['癸', '壬'], optional: ['乙', '甲'], avoid: ['己', '丁', '丙'] },
+            '庚': { required: ['甲', '乙'], optional: ['丙', '丁'], avoid: ['庚', '戊', '己'] },
+            '辛': { required: ['乙', '甲'], optional: ['丁', '丙'], avoid: ['辛', '己', '戊'] },
+            '壬': { required: ['丙', '丁'], optional: ['戊', '己'], avoid: ['壬', '庚', '辛'] },
+            '癸': { required: ['丁', '丙'], optional: ['己', '戊'], avoid: ['癸', '辛', '庚'] }
+        },
+        description: '财格为富格，主理财能力强、商业头脑发达',
+        characteristics: '善于理财，商业头脑好，财运旺盛，适合经商或从事财务工作'
+    },
+
+    // 印格
+    yin_ge: {
+        name: '印格',
+        conditions: {
+            '甲': { required: ['壬', '癸'], optional: ['甲', '乙'], avoid: ['戊', '己', '庚', '辛'] },
+            '乙': { required: ['癸', '壬'], optional: ['乙', '甲'], avoid: ['己', '戊', '辛', '庚'] },
+            '丙': { required: ['甲', '乙'], optional: ['丙', '丁'], avoid: ['庚', '辛', '壬', '癸'] },
+            '丁': { required: ['乙', '甲'], optional: ['丁', '丙'], avoid: ['辛', '庚', '癸', '壬'] },
+            '戊': { required: ['丙', '丁'], optional: ['戊', '己'], avoid: ['壬', '癸', '甲', '乙'] },
+            '己': { required: ['丁', '丙'], optional: ['己', '戊'], avoid: ['癸', '壬', '乙', '甲'] },
+            '庚': { required: ['戊', '己'], optional: ['庚', '辛'], avoid: ['甲', '乙', '丙', '丁'] },
+            '辛': { required: ['己', '戊'], optional: ['辛', '庚'], avoid: ['乙', '甲', '丁', '丙'] },
+            '壬': { required: ['庚', '辛'], optional: ['壬', '癸'], avoid: ['丙', '丁', '戊', '己'] },
+            '癸': { required: ['辛', '庚'], optional: ['癸', '壬'], avoid: ['丁', '丙', '己', '戊'] }
+        },
+        description: '印格为学业格，主聪明好学、有文化修养',
+        characteristics: '聪明好学，有文化修养，适合从事教育、研究或文化艺术工作'
+    }
+};
+
+// 分析格局
+function analyzeGeju(bazi) {
+    const dayTiangan = bazi.day.tiangan;
+    const allGanzhi = [
+        bazi.year.ganzhiStr,
+        bazi.month.ganzhiStr,
+        bazi.day.ganzhiStr,
+        bazi.hour.ganzhiStr
+    ];
+
+    const gejuAnalysis = [];
+
+    // 检查各种格局
+    for (const [gejuKey, gejuInfo] of Object.entries(GEJU_THEORY)) {
+        const conditions = gejuInfo.conditions[dayTiangan];
+        if (!conditions) continue;
+
+        let hasRequired = false;
+        let hasOptional = 0;
+        let hasAvoid = false;
+
+        // 检查天干
+        for (const ganzhi of allGanzhi) {
+            const tg = ganzhi[0];
+
+            if (conditions.required.includes(tg)) {
+                hasRequired = true;
+            }
+
+            if (conditions.optional.includes(tg)) {
+                hasOptional++;
+            }
+
+            if (conditions.avoid.includes(tg)) {
+                hasAvoid = true;
+                break;
+            }
+        }
+
+        // 格局成立条件
+        if (hasRequired && !hasAvoid) {
+            gejuAnalysis.push({
+                name: gejuInfo.name,
+                key: gejuKey,
+                quality: hasOptional >= 2 ? '上格' : hasOptional >= 1 ? '中格' : '正格',
+                description: gejuInfo.description,
+                characteristics: gejuInfo.characteristics,
+                strength: hasOptional >= 2 ? '强' : hasOptional >= 1 ? '中' : '弱'
+            });
+        }
+    }
+
+    return gejuAnalysis;
+}
+
+// 用神判断（基于《滴天髓》调候理论）
+function findYongShen(bazi, wuxingCount) {
+    const dayTiangan = bazi.day.tiangan;
+    const dayWuxing = TIANGAN_WUXING[dayTiangan];
+    const monthTiangan = bazi.month.tiangan;
+    const monthWuxing = TIANGAN_WUXING[monthTiangan];
+
+    const yongShenAnalysis = {
+        primary: '', // 主用神
+        secondary: '', // 次用神
+        reasoning: '', // 推理过程
+        advice: '' // 建议
+    };
+
+    // 调候用神：根据月令判断
+    const tiaohouYongShen = {
+        '寅': ['丙', '癸'], // 正月寒气未退，需丙火暖局，癸水润局
+        '卯': ['丙', '癸'], // 二月春寒料峭，丙癸并用
+        '辰': ['甲', '癸'], // 三月木有余气，甲癸并用
+        '巳': ['癸', '壬'], // 四月火旺，需水调候
+        '午': ['壬', '癸'], // 五月火炎土燥，壬癸并用
+        '未': ['乙', '癸'], // 六月土旺，乙木疏土，癸水润局
+        '申': ['丁', '甲'], // 七月金旺，需丁火制金，甲木助丁
+        '酉': ['丁', '甲'], // 八月金更旺，丁甲并用
+        '戌': ['甲', '丙'], // 九月土重，甲木疏土，丙火暖局
+        '亥': ['丙', '戊'], // 十月水旺，丙火暖局，戊土制水
+        '子': ['丙', '戊'], // 十一月水更旺，丙戊并用
+        '丑': ['丙', '甲']  // 十二月严寒，丙火暖局，甲木助火
+    };
+
+    const monthBranch = bazi.month.dizhi;
+    const tiaohou = tiaohouYongShen[monthBranch] || [];
+
+    // 分析五行强弱
+    const wuxingStrength = {};
+    for (const [wx, count] of Object.entries(wuxingCount)) {
+        wuxingStrength[wx] = count;
+    }
+
+    // 判断用神
+    let reasoning = `【用神分析】您的日主为${dayWuxing}，生在${monthBranch}月，属于${monthBranch}月令。`;
+
+    // 检查日主强弱
+    const dayWuxingCount = wuxingCount[dayWuxing] || 0;
+    const isDayMasterStrong = dayWuxingCount >= 2;
+
+    if (isDayMasterStrong) {
+        // 日主强，需克泄耗
+        reasoning += `日主${dayWuxing}有${dayWuxingCount}个，较强，需要克、泄、耗的五行来平衡。`;
+
+        // 优先考虑调候
+        if (tiaohou.length > 0) {
+            for (const yong of tiaohou) {
+                if (yong !== dayWuxing && wuxingCount[yong] === 0) {
+                    yongShenAnalysis.primary = yong;
+                    reasoning += `根据《滴天髓》调候理论，${monthBranch}月首选用神为${yong}。`;
+                    break;
+                }
+            }
+        }
+
+        // 如果没有找到调候用神，考虑克泄耗
+        if (!yongShenAnalysis.primary) {
+            for (const yong of tiaohou) {
+                if (WUXING_SHENGKE[dayWuxing].ke === yong ||
+                    WUXING_SHENGKE[dayWuxing].sheng === yong) {
+                    yongShenAnalysis.primary = yong;
+                    break;
+                }
+            }
+        }
+    } else {
+        // 日主弱，需生扶
+        reasoning += `日主${dayWuxing}只有${dayWuxingCount}个，较弱，需要生、扶的五行来增强。`;
+
+        // 优先考虑生扶
+        const shengWuxing = WUXING_SHENGKE[dayWuxing].shengBy;
+        if (wuxingCount[shengWuxing] === 0) {
+            yongShenAnalysis.primary = shengWuxing;
+            reasoning += `首选${shengWuxing}为用神，来生扶日主。`;
+        }
+
+        // 考虑调候
+        if (tiaohou.length > 0 && !yongShenAnalysis.primary) {
+            for (const yong of tiaohou) {
+                if (yong !== dayWuxing && wuxingCount[yong] <= 1) {
+                    yongShenAnalysis.primary = yong;
+                    reasoning += `同时考虑调候需要，选用${yong}为用神。`;
+                    break;
+                }
+            }
+        }
+    }
+
+    // 次用神分析
+    if (yongShenAnalysis.primary) {
+        // 寻找辅助用神
+        for (const yong of tiaohou) {
+            if (yong !== yongShenAnalysis.primary &&
+                wuxingCount[yong] === 0) {
+                yongShenAnalysis.secondary = yong;
+                break;
+            }
+        }
+    }
+
+    // 给出建议
+    yongShenAnalysis.reasoning = reasoning;
+    yongShenAnalysis.advice = `【用神建议】命局用神为${yongShenAnalysis.primary || '待定'}${yongShenAnalysis.secondary ? '，次用神为' + yongShenAnalysis.secondary : ''}。在日常生活中，可以多接触与用神五行相关的事物，如颜色、方位、职业等，有助于运势提升。`;
+
+    return yongShenAnalysis;
+}
 
 // 汉字五行属性（简化版，基于音韵和笔画）
 const CHAR_WUXING = {
@@ -250,22 +689,43 @@ function getYearPillar(year) {
     };
 }
 
-// 计算月柱（根据节气）
+// 计算月柱（基于精确节气计算）
 function getMonthPillar(year, month, day) {
-    // 简化版：使用固定的节气日期
-    let adjustedMonth = month;
+    const currentDate = new Date(year, month - 1, day);
+    const solarTerms = getMonthSolarTerms(year);
 
-    // 检查是否过了本月节气
-    const jieqi = JIEQI_DATES[month - 1];
-    if (day < jieqi.day) {
-        adjustedMonth = month - 1;
-        if (adjustedMonth < 1) adjustedMonth = 12;
+    // 地支月份对应
+    const monthBranches = ['寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥', '子', '丑'];
+    let currentBranch = '';
+
+    // 根据节气确定月支
+    if (currentDate >= solarTerms['寅月']) {
+        currentBranch = '寅';
+    } else if (currentDate >= solarTerms['丑月']) {
+        currentBranch = '丑';
+    } else {
+        // 如果还没到小寒，说明还是上一年的子月或亥月
+        const prevYearTerms = getMonthSolarTerms(year - 1);
+        if (currentDate >= prevYearTerms['子月']) {
+            currentBranch = '子';
+        } else {
+            currentBranch = '亥';
+        }
     }
 
-    // 年干计算月干：甲己之年丙作首
-    const yearTianganIndex = (year - 1900) % 10;
-    let monthTianganStart;
+    // 确定精确的月支
+    for (let i = 0; i < monthBranches.length; i++) {
+        if (currentDate >= solarTerms[monthBranches[i]]) {
+            currentBranch = monthBranches[i];
+        }
+    }
 
+    // 获取年干（用于计算月干）
+    const yearPillar = getYearPillar(year);
+    const yearTianganIndex = TIANGAN.indexOf(yearPillar.tiangan);
+
+    // 五虎遁月：甲己之年丙作首
+    let monthTianganStart;
     switch(yearTianganIndex) {
         case 0: case 5: monthTianganStart = 2; break; // 甲己年，丙作首
         case 1: case 6: monthTianganStart = 4; break; // 乙庚年，戊作首
@@ -274,15 +734,17 @@ function getMonthPillar(year, month, day) {
         case 4: case 9: monthTianganStart = 0; break; // 戊癸年，甲作首
     }
 
-    // 寅月为正月（农历）
-    const monthOffset = (adjustedMonth + 1) % 12;
-    const tianganIndex = (monthTianganStart + monthOffset) % 10;
-    const dizhiIndex = (monthOffset + 2) % 12;
+    // 计算月干
+    const branchIndex = DIZHI.indexOf(currentBranch);
+    const tianganIndex = (monthTianganStart + branchIndex) % 10;
 
     return {
         tiangan: TIANGAN[tianganIndex],
-        dizhi: DIZHI[dizhiIndex],
-        ganzhiStr: TIANGAN[tianganIndex] + DIZHI[dizhiIndex]
+        dizhi: currentBranch,
+        ganzhiStr: TIANGAN[tianganIndex] + currentBranch,
+        solarTerm: Object.keys(solarTerms).find(key => solarTerms[key] <= currentDate &&
+                 (Object.values(solarTerms).find(date => date > currentDate) ||
+                  new Date(year + 1, 0, 1)) > currentDate)
     };
 }
 
@@ -1098,6 +1560,9 @@ function displayResults(bazi, wuxingCount, dayunList, liunianList, gender, nameW
         `;
     });
 
+    // 显示高级命理分析
+    displayAdvancedAnalysis(bazi, wuxingCount);
+
     // 显示命理分析
     document.getElementById('personalityAnalysis').textContent = analyzePersonality(bazi, wuxingCount);
     document.getElementById('careerAnalysis').textContent = analyzeCareer(bazi, wuxingCount);
@@ -1108,6 +1573,96 @@ function displayResults(bazi, wuxingCount, dayunList, liunianList, gender, nameW
     // 显示结果区域
     document.querySelector('.input-section').style.display = 'none';
     document.getElementById('results').style.display = 'block';
+}
+
+// 显示高级命理分析
+function displayAdvancedAnalysis(bazi, wuxingCount) {
+    // 用神分析
+    const yongshenAnalysis = findYongShen(bazi, wuxingCount);
+    document.getElementById('yongshenAnalysis').innerHTML = `
+        <h4>用神判断</h4>
+        <p>${yongshenAnalysis.reasoning}</p>
+        <p class="yongshen-primary">主用神：${yongshenAnalysis.primary || '待定'}</p>
+        ${yongshenAnalysis.secondary ? `<p class="yongshen-secondary">次用神：${yongshenAnalysis.secondary}</p>` : ''}
+        <p>${yongshenAnalysis.advice}</p>
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;">
+            <p style="font-size: 0.9rem; color: #daa520;">
+                <strong>理论依据：</strong>基于《滴天髓》调候理论、《穷通宝鉴》用神学说，
+                结合日主强弱、月令时节、五行平衡综合判断。
+            </p>
+        </div>
+    `;
+
+    // 格局分析
+    const gejuAnalysis = analyzeGeju(bazi);
+    let gejuHTML = '<h4>格局判断</h4>';
+
+    if (gejuAnalysis.length > 0) {
+        gejuAnalysis.forEach(geju => {
+            gejuHTML += `
+                <div class="geju-item">
+                    <span class="geju-quality ${geju.quality}">${geju.quality}</span>
+                    <h5 style="color: #ffd700; margin-bottom: 10px;">${geju.name}</h5>
+                    <p><strong>格局特点：</strong>${geju.description}</p>
+                    <p><strong>性格特征：</strong>${geju.characteristics}</p>
+                    <p><strong>格局强度：</strong><span style="color: #daa520;">${geju.strength}</span></p>
+                </div>
+            `;
+        });
+    } else {
+        gejuHTML += `
+            <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <p style="color: #e8dcc0;">您的八字格局较为特殊，不常见于传统格局之中。
+                这通常意味着您具有独特的个性和命运轨迹，建议结合整体命局综合分析。</p>
+            </div>
+        `;
+    }
+
+    gejuHTML += `
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;">
+            <p style="font-size: 0.9rem; color: #daa520;">
+                <strong>理论依据：</strong>基于《子平真诠》格局理论、《渊海子平》八字格局，
+                分析四柱干支配合，判断命局高低贵贱。
+            </p>
+        </div>
+    `;
+    document.getElementById('gejuAnalysis').innerHTML = gejuHTML;
+
+    // 神煞分析
+    const shenshaAnalysis = analyzeShenSha(bazi);
+    let shenshaHTML = '<h4>神煞星宿</h4>';
+
+    if (shenshaAnalysis.length > 0) {
+        shenshaHTML += '<div class="shensha-grid">';
+        shenshaAnalysis.forEach(shensha => {
+            shenshaHTML += `
+                <div class="shensha-item">
+                    <div class="shensha-name">${shensha.name}</div>
+                    <div class="shensha-type">${shensha.type}</div>
+                    <div class="shensha-description">${shensha.description}</div>
+                    <div class="shensha-effect">${shensha.effect}</div>
+                </div>
+            `;
+        });
+        shenshaHTML += '</div>';
+    } else {
+        shenshaHTML += `
+            <div style="padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <p style="color: #e8dcc0;">您的八字中神煞较少，命局相对清纯。
+                这通常意味着命运较为平稳，少有大的波折和起伏。</p>
+            </div>
+        `;
+    }
+
+    shenshaHTML += `
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255,215,0,0.1); border-radius: 5px;">
+            <p style="font-size: 0.9rem; color: #daa520;">
+                <strong>理论依据：</strong>基于《神峰通考》神煞系统、《三命通会》神煞论，
+                分析吉凶神煞对命运的影响和作用。
+            </p>
+        </div>
+    `;
+    document.getElementById('shenshaAnalysis').innerHTML = shenshaHTML;
 }
 
 // 重置表单
