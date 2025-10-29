@@ -344,6 +344,184 @@ function analyzeShenSha(bazi) {
     return shenSha;
 }
 
+// 十神系统（八字命理核心理论）
+const SHISHEN_SYSTEM = {
+    // 十神名称和关系
+    '比肩': { wuxing: '同我', relation: '兄弟朋友', yinYang: '阳' },
+    '劫财': { wuxing: '同我', relation: '争夺财物', yinYang: '阴' },
+    '食神': { wuxing: '我生', relation: '才华表达', yinYang: '阴' },
+    '伤官': { wuxing: '我生', relation: '叛逆创新', yinYang: '阳' },
+    '正财': { wuxing: '我克', relation: '正当财富', yinYang: '阳' },
+    '偏财': { wuxing: '我克', relation: '意外之财', yinYang: '阴' },
+    '正官': { wuxing: '克我', relation: '正当管束', yinYang: '阴' },
+    '七杀': { wuxing: '克我', relation: '压力挑战', yinYang: '阳' },
+    '正印': { wuxing: '生我', relation: '正当事物', yinYang: '阳' },
+    '偏印': { wuxing: '生我', relation: '非正统学习', yinYang: '阴' }
+};
+
+// 分析十神
+function analyzeShiShen(bazi) {
+    const dayTiangan = bazi.day.tiangan;
+    const dayWuxing = TIANGAN_WUXING[dayTiangan];
+    const allGanzhi = [
+        { tiangan: bazi.year.tiangan, dizhi: bazi.year.dizhi, pillar: '年' },
+        { tiangan: bazi.month.tiangan, dizhi: bazi.month.dizhi, pillar: '月' },
+        { tiangan: bazi.day.tiangan, dizhi: bazi.day.dizhi, pillar: '日' },
+        { tiangan: bazi.hour.tiangan, dizhi: bazi.hour.dizhi, pillar: '时' }
+    ];
+
+    const shiShen = [];
+
+    allGanzhi.forEach(gz => {
+        // 跳过日干自身
+        if (gz.pillar === '日') return;
+
+        const tgWuxing = TIANGAN_WUXING[gz.tiangan];
+        const shishenName = getShiShenName(dayTiangan, gz.tiangan);
+
+        if (shishenName) {
+            shiShen.push({
+                name: shishenName,
+                pillar: gz.pillar,
+                ganzhi: gz.tiangan + gz.dizhi,
+                wuxing: tgWuxing,
+                strength: calculateShiShenStrength(shishenName, bazi)
+            });
+        }
+    });
+
+    return shiShen;
+}
+
+// 获取十神名称
+function getShiShenName(dayTiangan, otherTiangan) {
+    const dayWuxing = TIANGAN_WUXING[dayTiangan];
+    const otherWuxing = TIANGAN_WUXING[otherTiangan];
+
+    // 同我者为比劫
+    if (dayWuxing === otherWuxing) {
+        return (dayTiangan === otherTiangan) ? '比肩' : '劫财';
+    }
+
+    // 我生者为食伤
+    if (WUXING_SHENGKE[dayWuxing].sheng === otherWuxing) {
+        return (dayTiangan === otherTiangan) ? '食神' : '伤官';
+    }
+
+    // 我克者为财星
+    if (WUXING_SHENGKE[dayWuxing].ke === otherWuxing) {
+        return (dayTiangan === otherTiangan) ? '正财' : '偏财';
+    }
+
+    // 克我者为官杀
+    if (WUXING_SHENGKE[dayWuxing].keBy === otherWuxing) {
+        return (dayTiangan === otherTiangan) ? '七杀' : '正官';
+    }
+
+    // 生我者为印绶
+    if (WUXING_SHENGKE[dayWuxing].shengBy === otherWuxing) {
+        return (dayTiangan === otherTiangan) ? '偏印' : '正印';
+    }
+
+    return null;
+}
+
+// 计算十神强弱
+function calculateShiShenStrength(shishenName, bazi) {
+    // 简化的强弱判断，实际应该更复杂
+    const dayTiangan = bazi.day.tiangan;
+    const monthTiangan = bazi.month.tiangan;
+
+    // 月令透出的十神最强
+    if (bazi.month.tiangan === getShiShenName(dayTiangan, monthTiangan)) {
+        return '极强';
+    }
+
+    // 日支藏干的十神次强
+    // 这里简化处理
+    return '中等';
+}
+
+// 精确计算日主强弱
+function calculateDayMasterStrength(bazi, wuxingCount) {
+    const dayTiangan = bazi.day.tiangan;
+    const dayWuxing = TIANGAN_WUXING[dayTiangan];
+    const monthBranch = bazi.month.dizhi;
+    const dayBranch = bazi.day.dizhi;
+
+    let strengthScore = 0;
+    let factors = [];
+
+    // 1. 得令（月令）- 权重40%
+    const monthWuxing = DIZHI_WUXING[monthBranch];
+    if (monthWuxing === dayWuxing) {
+        strengthScore += 0.4;
+        factors.push('月令相同，得令');
+    } else if (WUXING_SHENGKE[monthWuxing].sheng === dayWuxing) {
+        strengthScore += 0.2;
+        factors.push('月令相生，半得令');
+    } else if (WUXING_SHENGKE[monthWuxing].shengBy === dayWuxing) {
+        strengthScore -= 0.1;
+        factors.push('月令相克，失令');
+    }
+
+    // 2. 得地（地支藏干）- 权重30%
+    const dayBranchWuxing = DIZHI_WUXING[dayBranch];
+    if (dayBranchWuxing === dayWuxing) {
+        strengthScore += 0.3;
+        factors.push('日支相同，得地');
+    } else if (WUXING_SHENGKE[dayBranchWuxing].sheng === dayWuxing) {
+        strengthScore += 0.15;
+        factors.push('日支相生，半得地');
+    }
+
+    // 3. 得势（天干）- 权重20%
+    const dayWuxingCount = wuxingCount[dayWuxing] || 0;
+    const otherTianganCount = 8 - dayWuxingCount; // 除去日干的7个天干
+    if (dayWuxingCount >= 3) {
+        strengthScore += 0.2;
+        factors.push(`天干有${dayWuxingCount}个${dayWuxing}，得势`);
+    } else if (dayWuxingCount === 2) {
+        strengthScore += 0.1;
+        factors.push(`天干有${dayWuxingCount}个${dayWuxing}，半得势`);
+    }
+
+    // 4. 五行总量平衡 - 权重10%
+    const totalWuxing = Object.values(wuxingCount).reduce((a, b) => a + b, 0);
+    const averageWuxing = totalWuxing / 5;
+    if (dayWuxingCount > averageWuxing) {
+        strengthScore += 0.1;
+        factors.push(`${dayWuxing}数量超过平均值`);
+    }
+
+    // 确保得分在0-1范围内
+    strengthScore = Math.max(0, Math.min(1, strengthScore));
+
+    let strengthLevel, description;
+    if (strengthScore >= 0.8) {
+        strengthLevel = '极强';
+        description = `${factors.join('，')}，综合判断为极强`;
+    } else if (strengthScore >= 0.6) {
+        strengthLevel = '强';
+        description = `${factors.join('，')}，综合判断为强`;
+    } else if (strengthScore >= 0.4) {
+        strengthLevel = '中和';
+        description = `${factors.join('，')}，综合判断为中和`;
+    } else if (strengthScore >= 0.2) {
+        strengthLevel = '弱';
+        description = `${factors.join('，')}，综合判断为弱`;
+    } else {
+        strengthLevel = '极弱';
+        description = `${factors.join('，')}，综合判断为极弱`;
+    }
+
+    return {
+        strength: strengthScore,
+        level: strengthLevel,
+        description: description
+    };
+}
+
 // 格局理论（基于《子平真诠》和《渊海子平》）
 const GEJU_THEORY = {
     // 正官格
@@ -520,13 +698,15 @@ function findYongShen(bazi, wuxingCount) {
     // 判断用神
     let reasoning = `【用神分析】您的日主为${dayWuxing}，生在${monthBranch}月，属于${monthBranch}月令。`;
 
-    // 检查日主强弱
-    const dayWuxingCount = wuxingCount[dayWuxing] || 0;
-    const isDayMasterStrong = dayWuxingCount >= 2;
+    // 精确判断日主强弱（基于传统命理理论）
+    const dayMasterStrength = calculateDayMasterStrength(bazi, wuxingCount);
+    const isDayMasterStrong = dayMasterStrength.strength >= 0.6;
+
+    reasoning += `【日主分析】您的日主为${dayWuxing}，${dayMasterStrength.description}\n\n`;
 
     if (isDayMasterStrong) {
         // 日主强，需克泄耗
-        reasoning += `日主${dayWuxing}有${dayWuxingCount}个，较强，需要克、泄、耗的五行来平衡。`;
+        reasoning += `日主较强，需要克、泄、耗的五行来平衡。`;
 
         // 优先考虑调候
         if (tiaohou.length > 0) {
@@ -1723,8 +1903,18 @@ function displayAdvancedAnalysis(bazi, wuxingCount) {
     if (shenshaAnalysis.length > 0) {
         shenshaHTML += '<div class="shensha-grid">';
 
-        // 直接按顺序显示所有神煞，每个神煞独立成一个卡片
-        shenshaAnalysis.forEach(shensha => {
+        // 按照类型顺序排序：贵人 → 文贵 → 桃花 → 煞星
+        const typeOrder = ['贵人', '文贵', '桃花', '煞星'];
+        const sortedShensha = [];
+
+        // 按顺序收集各种类型的神煞
+        typeOrder.forEach(type => {
+            const typeShensha = shenshaAnalysis.filter(s => s.type === type);
+            sortedShensha.push(...typeShensha);
+        });
+
+        // 显示排序后的神煞
+        sortedShensha.forEach(shensha => {
             let itemClass = 'shensha-item';
             if (shensha.type === '贵人' || shensha.type === '文贵') {
                 itemClass += ' auspicious';
